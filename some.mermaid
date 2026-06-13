@@ -1,0 +1,49 @@
+graph TD
+    %% External Entities
+    Marketer["Marketer"]
+    CarrierSim["Carrier Simulator"]
+    PurchaseLogs["Purchase Logs"]
+
+    %% Processes
+    P1("P1 · Opportunity Generation\nGemini · segment snapshot → cards")
+    P2("P2 · Campaign Dispatch\nCompile audience · push to BullMQ")
+    P3("P3 · Message Delivery\nCarrier pipeline · latency · status roll")
+    P4("P4 · Webhook Sync\nIdempotency shield · counter mutations")
+    P5("P5 · Conversion Simulation\nClick → purchase probability roll")
+
+    %% Data Stores
+    DS1[("DS1 · PostgreSQL")]
+    DS2[("DS2 · Redis / BullMQ")]
+
+    %% Marketer flows
+    Marketer -->|Dashboard load| P1
+    P1 -->|Opportunity cards| Marketer
+    Marketer -->|Launch campaign| P2
+    DS1 -.->|Live ROI metrics| Marketer
+
+    %% P1 reads DB
+    DS1 -.->|Read segment snapshot| P1
+
+    %% P2 writes
+    P2 -->|Write campaign record| DS1
+    P2 -->|Push outbox payload| DS2
+
+    %% P3 pulls and blasts
+    DS2 -.->|Pull dispatch tasks| P3
+    P3 -->|HTTP POST blast| CarrierSim
+
+    %% Carrier callback
+    CarrierSim -->|Raw webhook receipt| P4
+
+    %% P4 writes
+    P4 -->|Mutate campaign counters| DS1
+    P4 -.->|SET NX idempotency check| DS2
+
+    %% P4 → P5
+    P4 -->|Click event trigger| P5
+
+    %% P5 writes order
+    P5 -->|Write attributed order| DS1
+
+    %% RFM aggregation
+    PurchaseLogs -.->|RFM hourly aggregation| DS1
