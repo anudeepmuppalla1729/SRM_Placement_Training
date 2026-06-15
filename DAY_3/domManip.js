@@ -52,4 +52,5 @@ taskInput.addEventListener("keypress", (event) => {
 
 clearAllBtn.addEventListener("click", () => {
   taskList.innerHTML = ""; 
+  
 });
