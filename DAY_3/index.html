@@ -3,12 +3,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sample</title>
+    <title>Task Manager (DOM Manipulation)</title>
+    <style>
+      body { font-family: sans-serif; padding: 20px; }
+      .task-item { display: flex; align-items: center; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+      .task-item.completed span { text-decoration: line-through; color: gray; }
+      .task-text { flex-grow: 1; }
+      button { margin-left: 5px; cursor: pointer; padding: 5px 10px; }
+      #input-section { margin-bottom: 20px; }
+      #task-input { padding: 5px; width: 200px; }
+    </style>
   </head>
   <body>
-    <h1>Minimal DOM Example</h1>
-    <p id="text">Hello</p>
-    <button id="btn">Toggle</button>
+    <h1>Task Manager</h1>
+    
+    <div id="input-section">
+      <input type="text" id="task-input" placeholder="Enter a new task..." />
+      <button id="add-btn">Add Task</button>
+    </div>
+
+    <ul id="task-list" style="list-style-type: none; padding: 0;">
+    </ul>
+
+    <button id="clear-all-btn">Clear All Tasks</button>
 
     <script src="domManip.js"></script>
   </body>
